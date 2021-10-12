@@ -9,6 +9,8 @@
 #import "SWRightBottomADView.h"
 #import "WBMultipleDelegates.h"
 
+#import "UIView+Sizes.h"
+
 @interface ViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) SWRightBottomADView *rightView;
@@ -24,14 +26,14 @@
     // Do any additional setup after loading the view.
     
     _tableView = [[UITableView alloc] initWithFrame:self.view.bounds];
-    
     _tableView.dataSource = self;
     [self.view addSubview:_tableView];
     
-    SWRightBottomADView *view = [[SWRightBottomADView alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.view.bounds) - 200 ,CGRectGetHeight(self.view.bounds) - 300, 200, 250)];
-    view.backgroundColor = [UIColor cyanColor];
+    SWRightBottomADView *view = [[SWRightBottomADView alloc] initWithFrame:CGRectZero];
+    [view sizeToFit];
+    view.bottom = self.view.bottom - 100;
+    view.left = self.view.width - view.width;
     view.clipsToBounds = YES;
-    view.scrollView = _tableView;
     [self.view addSubview:view];
     self.rightView = view;
     
@@ -56,7 +58,7 @@
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    self.rightView.showCloseButton = !self.rightView.showCloseButton;
+//    self.rightView.showCloseButton = !self.rightView.showCloseButton;
 }
 
 // MARK: - UIScrollViewDelegate

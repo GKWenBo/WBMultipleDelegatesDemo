@@ -16,8 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL showCloseButton;
 
-@property (nonatomic, strong) UIScrollView *scrollView;
-
 @property (nonatomic, copy) void (^closeBlock)(void);
 @property (nonatomic, copy) void (^tapBlock)(void);
 

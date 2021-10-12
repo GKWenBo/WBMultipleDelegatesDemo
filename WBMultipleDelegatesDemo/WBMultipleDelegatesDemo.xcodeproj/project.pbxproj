@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0C7D74D62715292300F8844D /* UIView+Sizes.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C7D74D42715292300F8844D /* UIView+Sizes.m */; };
 		0C9FAD4B2711716C00E48FA4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C9FAD4A2711716C00E48FA4 /* AppDelegate.m */; };
 		0C9FAD4E2711716C00E48FA4 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C9FAD4D2711716C00E48FA4 /* SceneDelegate.m */; };
 		0C9FAD512711716C00E48FA4 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C9FAD502711716C00E48FA4 /* ViewController.m */; };
@@ -42,6 +43,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0C7D74D42715292300F8844D /* UIView+Sizes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Sizes.m"; sourceTree = "<group>"; };
+		0C7D74D52715292300F8844D /* UIView+Sizes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Sizes.h"; sourceTree = "<group>"; };
 		0C9FAD462711716C00E48FA4 /* WBMultipleDelegatesDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WBMultipleDelegatesDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C9FAD492711716C00E48FA4 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		0C9FAD4A2711716C00E48FA4 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -199,6 +202,8 @@
 				0C9FADAA27117DCE00E48FA4 /* UIScrollView+SWAddition.h */,
 				0C9FADAB27117DCE00E48FA4 /* UIScrollView+SWAddition.m */,
 				0C9FADAF27117E4E00E48FA4 /* WBSwizzle.h */,
+				0C7D74D52715292300F8844D /* UIView+Sizes.h */,
+				0C7D74D42715292300F8844D /* UIView+Sizes.m */,
 			);
 			path = Category;
 			sourceTree = "<group>";
@@ -336,6 +341,7 @@
 				0C9FAD962711798400E48FA4 /* WBMultipleDelegates.m in Sources */,
 				0C9FAD512711716C00E48FA4 /* ViewController.m in Sources */,
 				0C9FADA827117D0E00E48FA4 /* UITableView+WBAutoTrack.m in Sources */,
+				0C7D74D62715292300F8844D /* UIView+Sizes.m in Sources */,
 				0C9FADA527117CBB00E48FA4 /* SWAutoTrackScrollViewClass.m in Sources */,
 				0C9FAD4B2711716C00E48FA4 /* AppDelegate.m in Sources */,
 				0C9FAD5C2711717000E48FA4 /* main.m in Sources */,

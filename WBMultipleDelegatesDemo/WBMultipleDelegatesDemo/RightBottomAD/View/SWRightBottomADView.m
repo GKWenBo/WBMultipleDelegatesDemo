@@ -6,12 +6,15 @@
 //
 
 #import "SWRightBottomADView.h"
-#import "UIScrollView+SWAddition.h"
+//#import "UIScrollView+SWAddition.h"
+#import "UIView+Sizes.h"
 
-static CGFloat const SWRightBottomADShowDuration = 0.3f;
-static CGFloat const SWRightBottomADDismissDuration = 0.3f;
+static CGFloat const kSWRightBottomADShowDuration = 0.3f;
+static CGFloat const kSWRightBottomADDismissDuration = 0.3f;
+static CGFloat const kImageViewHeight = 60;
+static CGFloat const kButtonImageMargin = 5;
 
-@interface SWRightBottomADView ()
+@interface SWRightBottomADView () <UIScrollViewDelegate>
 
 @property (nonatomic, strong) UIButton *closeButton;
 @property (nonatomic, strong) UIImageView *imageView;
@@ -23,7 +26,7 @@ static CGFloat const SWRightBottomADDismissDuration = 0.3f;
 @implementation SWRightBottomADView
 
 - (void)dealloc {
-    [self removeObserver];
+//    [self removeObserver];
 }
 
 // MARK: - Init
@@ -41,12 +44,14 @@ static CGFloat const SWRightBottomADDismissDuration = 0.3f;
     self.isShow = YES;
     
     _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    _closeButton.backgroundColor = [UIColor yellowColor];
+    [_closeButton setImage:[UIImage imageNamed:@"AD_offbutton"] forState:UIControlStateNormal];
     [_closeButton addTarget:self action:@selector(closeButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+    [_closeButton sizeToFit];
     [self addSubview:_closeButton];
     
     _imageView = [UIImageView new];
-    _imageView.backgroundColor = [UIColor orangeColor];
+    _imageView.contentMode = UIViewContentModeLeft;
+    [self setupImage:[UIImage imageNamed:@"素材"]];
     [self addSubview:_imageView];
     
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction)];
@@ -55,55 +60,43 @@ static CGFloat const SWRightBottomADDismissDuration = 0.3f;
 
 - (void)layoutSubviews {
     [super layoutSubviews];
+     
+    if (!self.imageView.image) return;
     
-    CGRect closeButtonFrame = CGRectZero;
-    CGRect imageViewFrame = CGRectZero;
-    if (_showCloseButton) {
-        closeButtonFrame = CGRectMake((CGRectGetWidth(self.bounds) - 40) / 2, 0, 40, 40);
-        imageViewFrame = CGRectMake(0,  CGRectGetMaxY(closeButtonFrame) + 10, CGRectGetWidth(self.bounds), 200);
-    } else {
-        closeButtonFrame = CGRectMake((CGRectGetWidth(self.bounds) - 40) / 2, 0, 40, 0);
-        imageViewFrame = CGRectMake(0,  CGRectGetMaxY(closeButtonFrame), CGRectGetWidth(self.bounds), 200);
+    CGSize imageSize = _imageView.size;
+    CGSize buttonSize = _closeButton.size;
+    
+    self.width = imageSize.width;
+    self.height = imageSize.height + buttonSize.height + kButtonImageMargin;
+    
+    self.closeButton.top = 0;
+    self.closeButton.right = self.width - 12;
+    
+    self.imageView.top = self.closeButton.bottom + kButtonImageMargin;
+    self.imageView.left = 0;
+}
+
+- (CGSize)sizeThatFits:(CGSize)size {
+    if (!self.imageView.image) {
+        return CGSizeZero;
     }
-    
-    _closeButton.frame = closeButtonFrame;
-    _imageView.frame = imageViewFrame;
-    
-    CGRect frame = self.frame;
-    frame = CGRectMake(frame.origin.x, frame.origin.y, frame.size.width, CGRectGetHeight(closeButtonFrame) + CGRectGetHeight(_imageView.bounds));
-    self.frame = frame;
+    CGFloat w = self.imageView.width;
+    CGFloat h = self.imageView.height + self.closeButton.height + kButtonImageMargin;
+    return CGSizeMake(w, h);
 }
 
 // MARK: - private method
-- (void)removeObserver {
-    if (_scrollView) {
-        [_scrollView removeObserver:self forKeyPath:@"contentOffset"];
-    }
-}
-
-- (void)addObserver {
-    [_scrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
-}
-
-- (void)handleScrollViewScroll:(UIScrollView *)scrollView {
-    if (!scrollView.isDragging && !scrollView.isTracking && !scrollView.isDecelerating) return;
+- (void)setupImage:(UIImage *)image {
+    if (!image) return;
     
-    if (scrollView.sw_scrollDirection == SWScrollDirectionUp) {
-        NSLog(@"up");
-        [self showAnimation];
-    } else if (scrollView.sw_scrollDirection == SWScrollDirectionDown) {
-        NSLog(@"down");
-        [self hideAnimation];
-    }
-}
-
-// MARK: - KVO
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    if (object == _scrollView) {
-        [self handleScrollViewScroll:_scrollView];
-    } else {
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-    }
+    CGFloat imageW = image.size.width / image.size.height * kImageViewHeight;
+    // TODO: - 宽度限制
+    self.imageView.size = CGSizeMake(imageW, kImageViewHeight);
+    
+    self.imageView.image = image;
+    
+    [self setNeedsLayout];
+    [self layoutIfNeeded];
 }
 
 // MARK: - Animation
@@ -112,11 +105,12 @@ static CGFloat const SWRightBottomADDismissDuration = 0.3f;
     
     self.isAnimating = YES;
     
-    __block CGRect frame = self.frame;
-    [UIView animateWithDuration:SWRightBottomADShowDuration
+    [UIView animateWithDuration:kSWRightBottomADShowDuration
                      animations:^{
-        frame = CGRectMake(CGRectGetWidth(self.superview.bounds) - CGRectGetWidth(self.bounds), frame.origin.y, frame.size.width, frame.size.height);
-        self.frame = frame;
+        self.closeButton.alpha = 1.f;
+        self.imageView.alpha = 1.f;
+        
+        self.left = self.superview.width - self.width;
     }
                      completion:^(BOOL finished) {
         self.isShow = YES;
@@ -129,16 +123,24 @@ static CGFloat const SWRightBottomADDismissDuration = 0.3f;
     
     self.isAnimating = YES;
     
-    __block CGRect frame = self.frame;
-    [UIView animateWithDuration:SWRightBottomADDismissDuration
+    self.closeButton.alpha = 1.f;
+    self.imageView.alpha = 1.f;
+    [UIView animateWithDuration:kSWRightBottomADDismissDuration
                      animations:^{
-        frame = CGRectMake(CGRectGetWidth(self.superview.bounds) - CGRectGetWidth(self.bounds) + CGRectGetWidth(self.bounds) * .5, frame.origin.y, frame.size.width, frame.size.height);
-        self.frame = frame;
+        self.closeButton.alpha = 0.f;
+        self.imageView.alpha = .4f;
+        
+        self.left = self.superview.width - self.width * .5;
     }
                      completion:^(BOOL finished) {
         self.isShow = NO;
         self.isAnimating = NO;
     }];
+}
+
+- (void)delayShowAnimation {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(showAnimation) object:nil];
+    [self performSelector:@selector(showAnimation) withObject:nil afterDelay:2];
 }
 
 // MARK: - event response
@@ -158,22 +160,31 @@ static CGFloat const SWRightBottomADDismissDuration = 0.3f;
 - (void)setShowCloseButton:(BOOL)showCloseButton {
     _showCloseButton = showCloseButton;
     
-    [self setNeedsLayout];
-    [self layoutIfNeeded];
-}
-
-- (void)setScrollView:(UIScrollView *)scrollView {
-    if (_scrollView) {
-        [self removeObserver];
-    }
-    _scrollView = scrollView;
-    
-    [self addObserver];
+    self.closeButton.hidden = !showCloseButton;
 }
 
 // MARK: - UIScrollViewDelegate
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    NSLog(@"%s", __func__);
+    CGFloat offsetYLimit = 500;
+    CGFloat offsetY = scrollView.contentOffset.y;
+    NSLog(@"offsetY = %f", offsetY);
+    if (offsetY > offsetYLimit) {
+        [self performSelector:@selector(hideAnimation)];
+    }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    [self delayShowAnimation];
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+    [self delayShowAnimation];
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    if (!decelerate) {
+        [self delayShowAnimation];
+    }
 }
 
 @end
